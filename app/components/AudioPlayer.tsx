@@ -8,12 +8,21 @@ export default function AudioPlayer() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [trackSrc, setTrackSrc] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlay = () => {
+    if (isPlaying) audioRef.current?.pause();
+    else audioRef.current?.play();
+    setIsPlaying(!isPlaying);
+  };
 
   const refreshTracks = async () => {
     const res = await fetch("api/tracks");
     const data = await res.json();
     setTracks(data);
   };
+
+  const currentTrack = tracks.find((t) => t.src === trackSrc);
 
   useEffect(() => {
     refreshTracks();
@@ -65,7 +74,29 @@ export default function AudioPlayer() {
           Import
         </button>
       </div>
-
+      <div className="w-full h-16 bg-[#101015] border-t border-white/5 fixed bottom-0 flex items-center px-6 gap-4">
+        <div className="flex">
+          <p className="text-white text-sm font-medium truncate">
+            {currentTrack?.name ?? "No track selected"}
+          </p>
+        </div>
+        <button
+          disabled={!currentTrack?.name}
+          className="flex items-center justify-center w-9 h-9 rounded-full bg-[#AD46FF] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+          onClick={handlePlay}
+        >
+          {isPlaying ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+              <rect x="6" y="4" width="4" height="16" />
+              <rect x="14" y="4" width="4" height="16" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+          )}
+        </button>
+      </div>
       <input
         ref={inputRef}
         onChange={handleChangeInput}
