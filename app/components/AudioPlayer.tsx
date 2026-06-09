@@ -7,13 +7,19 @@ export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [tracks, setTracks] = useState<Track[]>([]);
-  const [trackSrc, setTrackSrc] = useState("");
+  const [trackSrc, setTrackSrc] = useState("null");
+  const [isFocus, setIsFocus] = useState<Track>();
   const [isPlaying, setIsPlaying] = useState(false);
 
   const handlePlay = () => {
     if (isPlaying) audioRef.current?.pause();
     else audioRef.current?.play();
     setIsPlaying(!isPlaying);
+  };
+
+  const handleSelectedTrack = (track: Track) => {
+    setTrackSrc(track.src);
+    setIsFocus(track);
   };
 
   const refreshTracks = async () => {
@@ -49,11 +55,28 @@ export default function AudioPlayer() {
         <h2 className="text-white/60">Library</h2>
         {tracks.map((track, index) => (
           <button
-            className="text-white/60 p-2 cursor-pointer focus:text-purple-500 focus:border focus:rounded-xl focus:bg-purple-500/10 focus:border-purple-500/30 flex justify-baseline truncate"
-            onClick={() => setTrackSrc(track.src)}
+            className={`p-2 cursor-pointer ${isFocus?.src === track.src ? "text-purple-500 border rounded-xl bg-purple-500/10 border-purple-500/30" : "text-white/60"} flex justify-between truncate items-center`}
+            onClick={() => handleSelectedTrack(track)}
             key={index}
           >
             {track.name}
+            {isFocus?.src === track.src && (
+              <button>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14H6L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                  <path d="M9 6V4h6v2" />
+                </svg>
+              </button>
+            )}
           </button>
         ))}
         <button
