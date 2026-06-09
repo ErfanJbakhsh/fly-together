@@ -36,7 +36,7 @@ export default function RegisterForm() {
       password: data.password,
       redirect: false,
     });
-    if (result?.error) setError("Invalid username or password");
+    if (result?.error) setError(result.error);
     else router.push("/");
   }
 

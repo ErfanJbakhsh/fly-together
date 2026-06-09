@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           Int     @id @default(autoincrement())
+  username     String  @unique @db.VarChar(11)
+  passwordHash String?
+
+  @@index([username])
+  @@map("Users")
+}
