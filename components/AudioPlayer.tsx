@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Track } from "../types/Track";
+import { Track } from "../app/types/Track";
 
 export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -9,31 +9,45 @@ export default function AudioPlayer() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [trackSrc, setTrackSrc] = useState("null");
   const [isFocus, setIsFocus] = useState<Track>();
+  const [deleteModal, setDeleteModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // pause and play for costume audio player
   const handlePlay = () => {
     if (isPlaying) audioRef.current?.pause();
     else audioRef.current?.play();
     setIsPlaying(!isPlaying);
   };
 
+  // selected track in library
   const handleSelectedTrack = (track: Track) => {
     setTrackSrc(track.src);
     setIsFocus(track);
   };
 
+  //library tracks refresh
   const refreshTracks = async () => {
     const res = await fetch("api/tracks");
     const data = await res.json();
     setTracks(data);
   };
-
-  const currentTrack = tracks.find((t) => t.src === trackSrc);
-
   useEffect(() => {
     refreshTracks();
   }, []);
 
+  //delete a track from library
+  const handleDeleteTrack = async (track: Track) => {
+    const res = await fetch("api/delete", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ src: track.src }),
+    });
+  };
+
+  //finds selected track name
+  const currentTrack = tracks.find((t) => t.src === trackSrc);
+
+  //new chosen tracks adds to public folder
   const handleChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -50,7 +64,18 @@ export default function AudioPlayer() {
 
   return (
     <>
+      {/* hidden audio tag */}
       <audio ref={audioRef} src={trackSrc} />
+      {/* hidden input tag */}
+      <input
+        ref={inputRef}
+        onChange={handleChangeInput}
+        type="file"
+        className="hidden"
+        accept=".mp3, .flac, .wav"
+      />
+
+      {/* library */}
       <div className="flex flex-col w-64 mt-5 ms-5">
         <h2 className="text-white/60">Library</h2>
         {tracks.map((track, index) => (
@@ -61,7 +86,7 @@ export default function AudioPlayer() {
           >
             {track.name}
             {isFocus?.src === track.src && (
-              <button>
+              <button onClick={() => setDeleteModal(true)}>
                 <svg
                   width="14"
                   height="14"
@@ -79,6 +104,7 @@ export default function AudioPlayer() {
             )}
           </button>
         ))}
+        {/* import to library */}
         <button
           onClick={() => inputRef.current?.click()}
           className="p-2 cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-[#AD46FF]/10 border border-[#AD46FF]/30 text-[#AD46FF] text-sm hover:bg-[#AD46FF]/20 transition-colors"
@@ -97,6 +123,7 @@ export default function AudioPlayer() {
           Import
         </button>
       </div>
+      {/* bottom audio player */}
       <div className="w-full h-16 bg-[#101015] border-t border-white/5 fixed bottom-0 flex items-center px-6 gap-4">
         <div className="flex">
           <p className="text-white text-sm font-medium truncate">
@@ -120,13 +147,6 @@ export default function AudioPlayer() {
           )}
         </button>
       </div>
-      <input
-        ref={inputRef}
-        onChange={handleChangeInput}
-        type="file"
-        className="hidden"
-        accept=".mp3, .flac, .wav"
-      />
     </>
   );
 }
