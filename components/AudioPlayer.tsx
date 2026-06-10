@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Track } from "../app/types/Track";
+import DeleteModal from "./DeleteModal";
 
 export default function AudioPlayer() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -147,6 +148,11 @@ export default function AudioPlayer() {
           )}
         </button>
       </div>
+      <DeleteModal
+        deleteModal={deleteModal}
+        setDeleteModal={setDeleteModal}
+        handleDeleteTrack={handleDeleteTrack}
+      />
     </>
   );
 }

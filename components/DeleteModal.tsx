@@ -1,4 +1,16 @@
-export default function DeleteModal() {
+import { Track } from "@/app/types/Track";
+
+interface props {
+  deleteModal: boolean;
+  setDeleteModal: (value: boolean) => void;
+  handleDeleteTrack: (track: Track) => void;
+}
+
+export default function DeleteModal({
+  deleteModal,
+  setDeleteModal,
+  handleDeleteTrack,
+}: props) {
   return (
     <>
       {deleteModal && (
@@ -22,9 +34,7 @@ export default function DeleteModal() {
               <p className="text-white font-medium text-sm">Delete track</p>
             </div>
             <p className="text-white/30 text-sm mb-5 pl-11">
-              Are you sure you want to delete{" "}
-              <span className="text-white/60">{trackToDelete?.name}</span>? This
-              can't be undone.
+              Are you sure you want to delete? This can't be undone.
             </p>
             <div className="flex gap-2 justify-end">
               <button
