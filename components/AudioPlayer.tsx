@@ -38,11 +38,13 @@ export default function AudioPlayer() {
 
   //delete a track from library
   const handleDeleteTrack = async (track: Track) => {
-    const res = await fetch("api/delete", {
+    await fetch("api/delete", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ src: track.src }),
     });
+
+    await refreshTracks();
   };
 
   //finds selected track name
@@ -152,6 +154,7 @@ export default function AudioPlayer() {
         deleteModal={deleteModal}
         setDeleteModal={setDeleteModal}
         handleDeleteTrack={handleDeleteTrack}
+        track={isFocus}
       />
     </>
   );

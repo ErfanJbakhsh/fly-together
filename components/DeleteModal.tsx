@@ -4,13 +4,19 @@ interface props {
   deleteModal: boolean;
   setDeleteModal: (value: boolean) => void;
   handleDeleteTrack: (track: Track) => void;
+  track: Track | undefined;
 }
 
 export default function DeleteModal({
   deleteModal,
   setDeleteModal,
   handleDeleteTrack,
+  track,
 }: props) {
+  const handleConfirmDelete = () => {
+    if (track) handleDeleteTrack(track);
+    setDeleteModal(false);
+  };
   return (
     <>
       {deleteModal && (
@@ -44,7 +50,7 @@ export default function DeleteModal({
                 Cancel
               </button>
               <button
-                onClick={() => handleDeleteTrack}
+                onClick={handleConfirmDelete}
                 className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 transition-colors"
               >
                 Delete
